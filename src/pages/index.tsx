@@ -9,6 +9,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 dayjs.extend(relativeTime);
 
@@ -22,6 +23,12 @@ const CreatePostWizard = () => {
       setInput("");
       // don't wait the result of the promise
       void ctx.posts.getAll.invalidate();
+    },
+    onError: (e) => {
+      const errorMessage = e.data?.zodError?.fieldErrors.content;
+      if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage[0]);
+      }
     },
   });
 
@@ -38,18 +45,36 @@ const CreatePostWizard = () => {
       />
       <input
         type="text"
-        placeholder="type Something"
+        placeholder="Gimme emojis !"
         className="grow bg-transparent outline-none"
         value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
-      <button
-        className="justify-self-end text-slate-200"
-        onClick={() => mutate({ content: input })}
         disabled={isPosting}
-      >
-        Submit
-      </button>
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+          console.log(e.key);
+          if (e.key === "Enter") {
+            e.preventDefault();
+            if (input !== "") {
+              mutate({ content: input });
+            }
+          }
+        }}
+      />
+      {input !== "" && !isPosting && (
+        <button
+          className="justify-self-end text-slate-200"
+          onClick={() => mutate({ content: input })}
+          disabled={isPosting}
+        >
+          Submit
+        </button>
+      )}
+
+      {isPosting && (
+        <div className="flex items-center justify-center">
+          <LoadingSpinner size={20} />
+        </div>
+      )}
     </div>
   );
 };
