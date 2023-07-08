@@ -26,6 +26,7 @@ const config = {
         pathname: '/oauth_google/*'
       }
     ],
+    domains:['images.clerk.dev']
   },
 };
 

@@ -7,6 +7,7 @@ import { SignInButton, useUser } from "@clerk/nextjs";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
+import { LoadingPage, LoadingSpinner } from "~/components/loading";
 
 dayjs.extend(relativeTime);
 
@@ -57,16 +58,34 @@ const PostView = ({ post, author }: PostWithUser) => {
     </div>
   );
 };
+const Feed = () => {
+  const {
+    isLoading: postsLoading,
+    isError,
+    data,
+  } = api.posts.getAll.useQuery();
 
+  if (postsLoading) return <LoadingPage />;
+  if (!data) return <div>Something went wrong</div>;
+
+  return (
+    <div className="flex flex-col">
+      {data?.map((fullPost) => (
+        <PostView {...fullPost} key={fullPost.post.id} />
+      ))}
+    </div>
+  );
+};
 export default function Home() {
-  const { isLoading, isError, data } = api.posts.getAll.useQuery();
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn, user, isLoaded: userLoaded } = useUser();
+
+  // start fetching early
+  api.posts.getAll.useQuery();
 
   console.log(user);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (!userLoaded) return <div />;
 
-  if (!data) return <div>Something went wrong</div>;
   return (
     <>
       <Head>
@@ -84,11 +103,7 @@ export default function Home() {
             )}
             {isSignedIn && <CreatePostWizard />}
           </div>
-          <div className="flex flex-col">
-            {data?.map((fullPost) => (
-              <PostView {...fullPost} key={fullPost.post.id} />
-            ))}
-          </div>
+          <Feed />
         </div>
       </main>
     </>
