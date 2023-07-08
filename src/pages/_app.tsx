@@ -1,14 +1,10 @@
-import { dark } from '@clerk/themes';
+import { dark } from "@clerk/themes";
 import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 
-
-const MyApp: AppType = ({
-  Component,
-  pageProps: { ...pageProps },
-}) => {
+const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (
     <ClerkProvider {...pageProps} appearance={{ baseTheme: dark }}>
       <Component {...pageProps} />
@@ -17,3 +13,5 @@ const MyApp: AppType = ({
 };
 
 export default api.withTRPC(MyApp);
+
+export { reportWebVitals } from "next-axiom";
