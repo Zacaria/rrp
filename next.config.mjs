@@ -18,6 +18,15 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.clerk.dev',
+        pathname: '/oauth_google/*'
+      }
+    ],
+  },
 };
 
 export default config;
