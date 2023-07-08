@@ -4,7 +4,7 @@ export default authMiddleware({
     beforeAuth: req => {
         console.log('beforeAuth')
     },
-    publicRoutes: ["/"]
+    publicRoutes: ["/", "/api/(.*)"]
 });
 
 export const config = {
