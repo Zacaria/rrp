@@ -17,15 +17,11 @@ jobs:
         with:
           node-version: "16" # specify your required node version here
 
-      - name: Install PNPM
-        run: |
-          curl -f https://get.pnpm.io/v6.js | node - add --global pnpm
-
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
 
       - name: Run TypeScript type checking
-        run: pnpm run typecheck # make sure you have a typecheck script in your package.json
+        run: npm run typecheck # make sure you have a typecheck script in your package.json
 
       - name: Run Lint
-        run: pnpm run lint # make sure you have a lint script in your package.json
+        run: npm run lint # make sure you have a lint script in your package.json
