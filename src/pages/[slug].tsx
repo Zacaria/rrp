@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Link from "next/link";
 import { api } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -8,7 +7,7 @@ import { createServerSideHelpers } from "@trpc/react-query/server";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import superjson from "superjson";
-import { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
 import PageLayout from "~/components/layout";
 import { LoadingPage } from "~/components/loading";
 import { PostView } from "~/components/postview";
@@ -52,7 +51,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         <div className="bg-slate relative h-36 bg-slate-600">
           <Image
             src={data.profilePicture}
-            alt={`${data.username}'s profile picture`}
+            alt={`${data.username ?? ""}'s profile picture`}
             width={128}
             height={128}
             className="absolute bottom-0 left-0 -m-[64px] ml-4 rounded-full border-4 border-black"
