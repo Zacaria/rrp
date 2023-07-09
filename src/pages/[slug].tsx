@@ -1,7 +1,36 @@
 import Head from "next/head";
 import Link from "next/link";
 import { api } from "~/utils/api";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import { appRouter } from "~/server/api/root";
+import { prisma } from "~/server/db";
+import superjson from "superjson";
+import { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
+import PageLayout from "~/components/layout";
+import { LoadingPage } from "~/components/loading";
+import { PostView } from "~/components/postview";
+
+dayjs.extend(relativeTime);
+
+const ProfileFeed = (props: { userId: string }) => {
+  const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
+    userId: props.userId,
+  });
+
+  if (isLoading) return <LoadingPage />;
+
+  if (!data || data.length === 0) return <div>User has no posts</div>;
+  return (
+    <div className="flex flex-col">
+      {data.map((fullpost) => (
+        <PostView {...fullpost} key={fullpost.post.id} />
+      ))}
+    </div>
+  );
+};
 
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data, isLoading } = api.profile.getUserByUsername.useQuery({
@@ -34,18 +63,12 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
           data.username ?? ""
         }`}</div>
         <div className="w-full border-b border-slate-400"></div>
+        <ProfileFeed userId={data.id} />
       </PageLayout>
     </>
   );
 };
 export default ProfilePage;
-
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import { appRouter } from "~/server/api/root";
-import { prisma } from "~/server/db";
-import superjson from "superjson";
-import { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
-import PageLayout from "~/components/layout";
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = createServerSideHelpers({
